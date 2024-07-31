@@ -76,11 +76,14 @@ fun AddTaskDialog(
                     }
                 )
 
-                Row{
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Checkbox(
                         checked = state.isImportant,
                         onCheckedChange = { onEvent(TaskEvent.SetIsImportant(it)) },
                     )
+
                     Text("Important")
                 }
 

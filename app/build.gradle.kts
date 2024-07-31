@@ -74,9 +74,6 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
 
-    //Swipe
-    implementation(libs.swipe)
-
     //hilt
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
