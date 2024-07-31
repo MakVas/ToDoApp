@@ -6,6 +6,7 @@ sealed interface TaskEvent {
     data class SetDate(val date: String): TaskEvent
     data class SetTime(val time: String): TaskEvent
     data class SetDescription(val description: String): TaskEvent
+    data class SetIsImportant(val isImportant: Boolean): TaskEvent
     data class UpdateCompleted(val task: Task, val isCompleted: Boolean): TaskEvent
     data object ShowDialog: TaskEvent
     data object HideDialog: TaskEvent

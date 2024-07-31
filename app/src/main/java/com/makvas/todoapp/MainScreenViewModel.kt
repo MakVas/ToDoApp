@@ -22,7 +22,7 @@ class MainScreenViewModel(
             when (sortType) {
                 SortType.TITLE -> dao.getTasksOrderedByTitle()
                 SortType.DATE -> dao.getTasksOrderedByDate()
-                SortType.TIME -> dao.getTasksOrderedByTime()
+                SortType.IMPORTANCE -> dao.getImportantTasks()
                 SortType.COMPLETED -> dao.getCompletedTasks()
                 SortType.UNCOMPLETED -> dao.getUncompletedTasks()
             }
@@ -57,8 +57,9 @@ class MainScreenViewModel(
                 val title = _state.value.title
                 val date = _state.value.date
                 val time = _state.value.time
-                val isCompleted = false
                 val description = _state.value.description
+                val isImportant = _state.value.isImportant
+                val isCompleted = false
 
                 if (title.isBlank() || date.isBlank() || time.isBlank() || description.isBlank()) {
                     return
@@ -69,7 +70,8 @@ class MainScreenViewModel(
                     date = date,
                     time = time,
                     isCompleted = isCompleted,
-                    description = description
+                    description = description,
+                    isImportant = isImportant
                 )
 
                 viewModelScope.launch {
@@ -83,7 +85,8 @@ class MainScreenViewModel(
                         date = "",
                         time = "",
                         isCompleted = false,
-                        description = ""
+                        description = "",
+                        isImportant = false
                     )
                 }
             }
@@ -116,6 +119,14 @@ class MainScreenViewModel(
                 _state.update {
                     it.copy(
                         title = event.title
+                    )
+                }
+            }
+
+            is TaskEvent.SetIsImportant -> {
+                _state.update {
+                    it.copy(
+                        isImportant = event.isImportant
                     )
                 }
             }
