@@ -8,9 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -18,7 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.makvas.todoapp.R
 import com.makvas.todoapp.domain.repository.TaskEvent
 import com.makvas.todoapp.domain.model.TaskState
 
@@ -43,6 +47,7 @@ fun AddTaskDialog(
 
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontWeight = FontWeight.Bold,
                     text = "Add task"
                 )
 
@@ -55,22 +60,6 @@ fun AddTaskDialog(
                 )
 
                 TextField(
-                    value = state.date,
-                    onValueChange = { onEvent(TaskEvent.SetDate(it)) },
-                    placeholder = {
-                        Text("Date")
-                    }
-                )
-
-                TextField(
-                    value = state.time,
-                    onValueChange = { onEvent(TaskEvent.SetTime(it)) },
-                    placeholder = {
-                        Text("Time")
-                    }
-                )
-
-                TextField(
                     value = state.description,
                     onValueChange = { onEvent(TaskEvent.SetDescription(it)) },
                     placeholder = {
@@ -78,25 +67,47 @@ fun AddTaskDialog(
                     }
                 )
 
+                Text(
+                    text = "isImportant: ${state.isImportant}"
+                )
+
+                Text(
+                    text = "Selected Date: ${state.date}"
+                )
+
+                Text(
+                    text = "Selected Time: ${state.time}"
+                )
+
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = state.isImportant,
-                        onCheckedChange = { onEvent(TaskEvent.SetIsImportant(it)) },
-                    )
-
-                    Text("Important")
-                }
-
-
-                Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        onEvent(TaskEvent.SaveTask)
-                    }
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(text = "Save")
+
+                    Row {
+                        Checkbox(
+                            checked = state.isImportant,
+                            onCheckedChange = { onEvent(TaskEvent.SetIsImportant(it)) },
+                        )
+
+                        CustomDatePicker(
+                            onValueChange = { onEvent(TaskEvent.SetDate(it)) }
+                        )
+
+                        CustomTimePicker(
+                            onValueChange = { onEvent(TaskEvent.SetTime(it)) }
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { onEvent(TaskEvent.SaveTask) }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.save),
+                            contentDescription = "Save"
+                        )
+                    }
                 }
             }
         }
