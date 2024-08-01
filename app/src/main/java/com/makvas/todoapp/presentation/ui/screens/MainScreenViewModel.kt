@@ -58,6 +58,22 @@ class MainScreenViewModel(
                 }
             }
 
+            TaskEvent.ShowDropMenu -> {
+                _state.update {
+                    it.copy(
+                        isDropMenuVisible = true
+                    )
+                }
+            }
+
+            TaskEvent.HideDropMenu -> {
+                _state.update {
+                    it.copy(
+                        isDropMenuVisible = false
+                    )
+                }
+            }
+
             TaskEvent.SaveTask -> {
                 val title = _state.value.title
                 val date = _state.value.date

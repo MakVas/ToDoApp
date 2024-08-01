@@ -12,5 +12,6 @@ data class TaskState(
     val description: String = "",
     val isImportant: Boolean = false,
     val isAddingTask: Boolean = false,
+    val isDropMenuVisible: Boolean = false,
     val sortType: SortType = SortType.TITLE
 )

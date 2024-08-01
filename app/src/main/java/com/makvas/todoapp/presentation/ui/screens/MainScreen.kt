@@ -1,23 +1,24 @@
 package com.makvas.todoapp.presentation.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -75,32 +76,11 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
+
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SortType.entries.forEach { sortType ->
-                        Row(
-                            modifier = Modifier
-                                .clickable {
-                                    onEvent(TaskEvent.SortTasks(sortType))
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = state.sortType == sortType,
-                                onClick = {
-                                    onEvent(TaskEvent.SortTasks(sortType))
-                                }
-                            )
-                            Text(text = sortType.name)
-                        }
-                    }
-                }
+                SortByRow(state = state, onEvent = onEvent)
             }
+
             items(
                 items = state.tasks,
                 key = { task -> task.id }
@@ -121,6 +101,54 @@ fun MainScreen(
                             .align(Alignment.BottomCenter),
                         thickness = 0.25.dp,
                         color = colorScheme.outline
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SortByRow(
+    state: TaskState,
+    onEvent: (TaskEvent) -> Unit
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        Text(
+            text = "Sort by:"
+        )
+
+        Column {
+            Text(
+                text = state.sortType.name,
+                color = colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .clickable {
+                        onEvent(TaskEvent.ShowDropMenu)
+                    }
+            )
+
+            DropdownMenu(
+                expanded = state.isDropMenuVisible,
+                onDismissRequest = { onEvent(TaskEvent.HideDropMenu) }
+            ) {
+                SortType.entries.forEach { sortType ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = sortType.name)
+                        },
+                        onClick = {
+                            onEvent(TaskEvent.SortTasks(sortType))
+                            onEvent(TaskEvent.HideDropMenu)
+                        }
                     )
                 }
             }

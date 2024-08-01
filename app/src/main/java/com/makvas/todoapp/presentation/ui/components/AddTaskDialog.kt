@@ -56,7 +56,8 @@ fun AddTaskDialog(
                     onValueChange = { onEvent(TaskEvent.SetTitle(it)) },
                     placeholder = {
                         Text("Title")
-                    }
+                    },
+                    singleLine = true
                 )
 
                 OutlinedTextField(
@@ -64,7 +65,8 @@ fun AddTaskDialog(
                     onValueChange = { onEvent(TaskEvent.SetDescription(it)) },
                     placeholder = {
                         Text("Description")
-                    }
+                    },
+                    singleLine = true
                 )
 
                 Text(

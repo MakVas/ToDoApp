@@ -11,6 +11,8 @@ sealed interface TaskEvent {
     data class SetDescription(val description: String): TaskEvent
     data class SetIsImportant(val isImportant: Boolean): TaskEvent
     data class UpdateCompleted(val task: Task, val isCompleted: Boolean): TaskEvent
+    data object ShowDropMenu: TaskEvent
+    data object HideDropMenu: TaskEvent
     data object ShowDialog: TaskEvent
     data object HideDialog: TaskEvent
     data class SortTasks(val sortType: SortType): TaskEvent
