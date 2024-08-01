@@ -1,4 +1,4 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.makvas.todoapp.domain.repository.TaskEvent
+import com.makvas.todoapp.domain.model.TaskState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,4 +1,4 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.presentation.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -7,7 +7,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.RadioButton
@@ -35,6 +35,7 @@ import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +50,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.makvas.todoapp.presentation.util.SortType
+import com.makvas.todoapp.data.local.entities.Task
+import com.makvas.todoapp.domain.repository.TaskEvent
+import com.makvas.todoapp.domain.model.TaskState
+import com.makvas.todoapp.presentation.ui.components.AddTaskDialog
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,18 +66,32 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "ToDoApp") }
+                colors = topAppBarColors(
+                    containerColor = colorScheme.surface,
+                    titleContentColor = colorScheme.onSurface,
+                    navigationIconContentColor = colorScheme.onSurface,
+                    actionIconContentColor = colorScheme.onSurface,
+                    scrolledContainerColor = colorScheme.surface,
+                ),
+                title = {
+                    Text(
+                        text = "ToDoApp",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
+                containerColor = colorScheme.primaryContainer,
                 onClick = {
                     onEvent(TaskEvent.ShowDialog)
                 },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Add task"
+                        contentDescription = "Add task",
+                        tint = colorScheme.onPrimaryContainer
                     )
                 }
             )
@@ -86,7 +106,6 @@ fun MainScreen(
             contentPadding = innerPadding,
             modifier = Modifier
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Row(
@@ -118,13 +137,22 @@ fun MainScreen(
                 items = state.tasks,
                 key = { task -> task.id }
             ) { task ->
-                SwipeToDeleteContainer(
-                    item = task,
-                    onDelete = { onEvent(TaskEvent.DeleteTask(task)) },
-                ) {
-                    TaskItem(
-                        onEvent = onEvent,
-                        task = task
+                Box {
+                    SwipeToDeleteContainer(
+                        item = task,
+                        onDelete = { onEvent(TaskEvent.DeleteTask(task)) },
+                    ) {
+                        TaskItem(
+                            onEvent = onEvent,
+                            task = task
+                        )
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(start = 50.dp)
+                            .align(Alignment.BottomCenter),
+                        thickness = 0.25.dp,
+                        color = colorScheme.outline
                     )
                 }
             }
@@ -140,9 +168,9 @@ fun TaskItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(65.dp)
-            .background(colorScheme.surface)
-            .padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+            .height(70.dp)
+            .background(colorScheme.surfaceContainer)
+            .padding(start = 8.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
@@ -177,12 +205,13 @@ fun TaskItem(
                     modifier = Modifier
                         .size(25.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEF5350)),
+                        .background(colorScheme.error),
                     contentAlignment = Alignment.Center,
                     content = {
                         Text(
                             fontWeight = FontWeight.Bold,
-                            text = "!"
+                            text = "!",
+                            color = colorScheme.onError
                         )
                     },
                 )
@@ -194,7 +223,8 @@ fun TaskItem(
                         .background(Color.Transparent),
                     contentAlignment = Alignment.Center,
                     content = {
-                        Text(text = " "
+                        Text(
+                            text = " "
                         )
                     },
                 )
@@ -246,6 +276,7 @@ fun <T> SwipeToDeleteContainer(
             },
             content = { content(item) },
             enableDismissFromEndToStart = true,
+            enableDismissFromStartToEnd = false
         )
     }
 }
@@ -256,7 +287,7 @@ fun DeleteBackground(
     swipeDismissState: SwipeToDismissBoxState
 ) {
     val color = if (swipeDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-        Color.Red
+        colorScheme.error
     } else Color.Transparent
 
     Box(
@@ -269,7 +300,7 @@ fun DeleteBackground(
         Icon(
             imageVector = Icons.Default.Delete,
             contentDescription = "Delete",
-            tint = Color.White
+            tint = colorScheme.onError
         )
     }
 }

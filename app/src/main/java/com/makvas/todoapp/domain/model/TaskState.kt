@@ -1,4 +1,7 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.domain.model
+
+import com.makvas.todoapp.data.local.entities.Task
+import com.makvas.todoapp.presentation.util.SortType
 
 data class TaskState(
     val tasks: List<Task> = emptyList(),

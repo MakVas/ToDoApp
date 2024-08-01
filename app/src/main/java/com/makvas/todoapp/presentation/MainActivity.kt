@@ -1,4 +1,4 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
-import com.makvas.todoapp.ui.theme.ToDoAppTheme
+import com.makvas.todoapp.presentation.ui.screens.MainScreen
+import com.makvas.todoapp.presentation.ui.screens.MainScreenViewModel
+import com.makvas.todoapp.data.local.db.TaskDatabase
+import com.makvas.todoapp.presentation.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -34,7 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ToDoAppTheme {
+            AppTheme {
                 val state = viewModel.state.collectAsState()
                 MainScreen(
                     state = state.value,

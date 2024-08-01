@@ -1,9 +1,10 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
+import com.makvas.todoapp.data.local.entities.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao

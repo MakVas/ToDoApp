@@ -1,7 +1,12 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.presentation.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.makvas.todoapp.presentation.util.SortType
+import com.makvas.todoapp.data.local.entities.Task
+import com.makvas.todoapp.data.local.dao.TaskDao
+import com.makvas.todoapp.domain.repository.TaskEvent
+import com.makvas.todoapp.domain.model.TaskState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -1,4 +1,4 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

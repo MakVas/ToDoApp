@@ -1,7 +1,9 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.data.local.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.makvas.todoapp.data.local.entities.Task
+import com.makvas.todoapp.data.local.dao.TaskDao
 
 @Database(
     entities = [Task::class],

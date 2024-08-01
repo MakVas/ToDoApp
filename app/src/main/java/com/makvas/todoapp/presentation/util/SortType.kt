@@ -1,4 +1,4 @@
-package com.makvas.todoapp
+package com.makvas.todoapp.presentation.util
 
 enum class SortType {
     TITLE,
