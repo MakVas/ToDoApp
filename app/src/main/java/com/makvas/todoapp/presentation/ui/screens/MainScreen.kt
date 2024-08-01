@@ -21,7 +21,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,17 +42,10 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = colorScheme.surface,
-                    titleContentColor = colorScheme.onSurface,
-                    navigationIconContentColor = colorScheme.onSurface,
-                    actionIconContentColor = colorScheme.onSurface,
-                    scrolledContainerColor = colorScheme.surface,
-                ),
                 title = {
                     Text(
                         text = "ToDoApp",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             )
@@ -67,8 +59,7 @@ fun MainScreen(
                 content = {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Add task",
-                        tint = colorScheme.onPrimaryContainer
+                        contentDescription = "Add task"
                     )
                 }
             )

@@ -13,14 +13,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.makvas.todoapp.R
 import com.makvas.todoapp.domain.repository.TaskEvent
@@ -47,11 +47,11 @@ fun AddTaskDialog(
 
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontWeight = FontWeight.Bold,
-                    text = "Add task"
+                    text = "Add task",
+                    style = typography.titleLarge
                 )
 
-                TextField(
+                OutlinedTextField(
                     value = state.title,
                     onValueChange = { onEvent(TaskEvent.SetTitle(it)) },
                     placeholder = {
@@ -59,7 +59,7 @@ fun AddTaskDialog(
                     }
                 )
 
-                TextField(
+                OutlinedTextField(
                     value = state.description,
                     onValueChange = { onEvent(TaskEvent.SetDescription(it)) },
                     placeholder = {
