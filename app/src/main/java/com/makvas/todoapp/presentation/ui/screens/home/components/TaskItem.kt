@@ -1,4 +1,4 @@
-package com.makvas.todoapp.presentation.ui.components
+package com.makvas.todoapp.presentation.ui.screens.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,26 +20,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.makvas.todoapp.data.local.entities.Task
-import com.makvas.todoapp.domain.repository.TaskEvent
+import com.makvas.todoapp.data.Task
+import com.makvas.todoapp.presentation.ui.screens.home.MainScreenEvent
 
 @Composable
 fun TaskItem(
-    onEvent: (TaskEvent) -> Unit,
-    task: Task
+    task: Task,
+    onEvent: (MainScreenEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(70.dp)
+            .height(95.dp)
             .background(colorScheme.surfaceContainer)
             .padding(start = 8.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
             checked = task.isCompleted,
-            onCheckedChange = {
-                onEvent(TaskEvent.UpdateCompleted(task, !task.isCompleted))
+            onCheckedChange = { isCompleted ->
+                onEvent(MainScreenEvent.OnCompletedClick(task, isCompleted))
             }
         )
         Column(
@@ -49,19 +50,22 @@ fun TaskItem(
                 text = task.title,
                 fontSize = 20.sp
             )
-
-            Text(
-                text = task.description,
-                fontSize = 14.sp
-            )
+            task.description?.let {
+                Text(
+                    text = task.description,
+                    fontSize = 14.sp
+                )
+            }
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = task.time,
-                fontSize = 14.sp
-            )
+            task.time?.let {
+                Text(
+                    text = it,
+                    fontSize = 14.sp
+                )
+            }
 
             if (task.isImportant) {
                 Box(

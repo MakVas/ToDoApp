@@ -1,4 +1,4 @@
-package com.makvas.todoapp.data.local.entities
+package com.makvas.todoapp.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey
 data class Task(
     val title: String,
     val date: String,
-    val time: String,
+    val time: String?,
     val isCompleted: Boolean,
     val isImportant: Boolean,
-    val description: String,
+    val description: String?,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )

@@ -1,4 +1,4 @@
-package com.makvas.todoapp.presentation.ui.components
+package com.makvas.todoapp.presentation.ui.screens.add_task.components
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog

@@ -1,4 +1,4 @@
-package com.makvas.todoapp.presentation.ui.components
+package com.makvas.todoapp.presentation.ui.screens.home.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
@@ -25,17 +26,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.makvas.todoapp.data.Task
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> SwipeToDeleteContainer(
-    item: T,
-    onDelete: (T) -> Unit,
+fun SwipeToDeleteContainer(
+    modifier: Modifier = Modifier,
+    item: Task,
+    onDelete: (Task) -> Unit,
     animationDuration: Int = 300,
-    content: @Composable (T) -> Unit
+    content: @Composable (Task) -> Unit
 ) {
     var isRemoved by remember {
         mutableStateOf(false)
@@ -66,6 +70,8 @@ fun <T> SwipeToDeleteContainer(
         ) + fadeOut()
     ) {
         SwipeToDismissBox(
+            modifier = modifier
+                .clip(MaterialTheme.shapes.medium),
             state = state,
             backgroundContent = {
                 DeleteBackground(swipeDismissState = state)

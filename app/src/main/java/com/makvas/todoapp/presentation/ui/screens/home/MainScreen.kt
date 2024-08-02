@@ -1,5 +1,6 @@
-package com.makvas.todoapp.presentation.ui.screens
+package com.makvas.todoapp.presentation.ui.screens.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -19,40 +19,87 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.makvas.todoapp.R
+import com.makvas.todoapp.data.Task
+import com.makvas.todoapp.presentation.ui.screens.home.components.SwipeToDeleteContainer
+import com.makvas.todoapp.presentation.ui.screens.home.components.TaskItem
 import com.makvas.todoapp.presentation.util.SortType
-import com.makvas.todoapp.domain.repository.TaskEvent
-import com.makvas.todoapp.domain.model.TaskState
-import com.makvas.todoapp.presentation.ui.components.AddTaskDialog
-import com.makvas.todoapp.presentation.ui.components.SwipeToDeleteContainer
-import com.makvas.todoapp.presentation.ui.components.TaskItem
 import com.makvas.todoapp.presentation.util.StatsType
+import com.makvas.todoapp.presentation.util.UiEvent
+
+@Composable
+fun MainScreen(
+    onNavigate: (UiEvent.Navigate) -> Unit,
+    viewModel: MainScreenViewModel = hiltViewModel()
+) {
+    val tasks = viewModel.tasks.collectAsState(initial = emptyList())
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+
+                is UiEvent.Navigate -> onNavigate(event)
+
+                is UiEvent.ShowSnackbar -> {
+                    val result = snackBarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = event.actionText
+                    )
+
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.onEvent(MainScreenEvent.OnUndoDeleteClick)
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    MainScreenScaffold(
+        tasks = tasks.value,
+        snackBarHostState = snackBarHostState,
+        viewModel = viewModel
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    state: TaskState,
-    onEvent: (TaskEvent) -> Unit,
+private fun MainScreenScaffold(
+    tasks: List<Task>,
+    snackBarHostState: SnackbarHostState,
+    viewModel: MainScreenViewModel
 ) {
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         topBar = {
             TopAppBar(
                 actions = {
@@ -89,7 +136,7 @@ fun MainScreen(
             FloatingActionButton(
                 containerColor = colorScheme.primaryContainer,
                 onClick = {
-                    onEvent(TaskEvent.ShowDialog)
+                    viewModel.onEvent(MainScreenEvent.OnAddTaskClick)
                 },
                 content = {
                     Icon(
@@ -101,59 +148,54 @@ fun MainScreen(
         },
     ) { innerPadding ->
 
-        if (state.isAddingTask) {
-            AddTaskDialog(state = state, onEvent = onEvent)
-        }
-
-        MainScreen(
+        MainScreenBody(
             innerPadding = innerPadding,
-            state = state,
-            onEvent = onEvent
+            tasks = tasks,
+            viewModel = viewModel
         )
     }
 }
 
 @Composable
-private fun MainScreen(
+private fun MainScreenBody(
     innerPadding: PaddingValues,
-    state: TaskState,
-    onEvent: (TaskEvent) -> Unit,
+    tasks: List<Task>,
+    viewModel: MainScreenViewModel,
 ) {
     LazyColumn(
         contentPadding = innerPadding,
         modifier = Modifier
             .fillMaxSize(),
     ) {
-
         item {
             ToDoStats()
         }
 
         item {
-            SortByRow(state = state, onEvent = onEvent)
+            SortByRow(viewModel = viewModel)
         }
 
         items(
-            items = state.tasks,
+            items = tasks,
             key = { task -> task.id }
         ) { task ->
             Box {
                 SwipeToDeleteContainer(
                     item = task,
-                    onDelete = { onEvent(TaskEvent.DeleteTask(task)) },
+                    onDelete = { viewModel.onEvent(MainScreenEvent.OnDeleteClick(task)) },
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     TaskItem(
-                        onEvent = onEvent,
-                        task = task
+                        onEvent = viewModel::onEvent,
+                        task = task,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clip(MaterialTheme.shapes.large)
+                            .clickable {
+                                viewModel.onEvent(MainScreenEvent.OnTaskClick(task))
+                            }
                     )
                 }
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(start = 50.dp)
-                        .align(Alignment.BottomCenter),
-                    thickness = 0.25.dp,
-                    color = colorScheme.outline
-                )
             }
         }
     }
@@ -161,9 +203,11 @@ private fun MainScreen(
 
 @Composable
 private fun SortByRow(
-    state: TaskState,
-    onEvent: (TaskEvent) -> Unit
+    viewModel: MainScreenViewModel
 ) {
+    val sortType = viewModel.sortType.collectAsState(initial = SortType.TITLE)
+    val isDropMenuVisible by viewModel.isDropMenuVisible.collectAsState(initial = false)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,19 +223,18 @@ private fun SortByRow(
         Column {
             TextButton(
                 onClick = {
-                    onEvent(TaskEvent.ShowDropMenu)
+                    viewModel.onEvent(MainScreenEvent.ShowDropMenu)
                 },
             ) {
                 Text(
-                    text = state.sortType.name,
-                    color = colorScheme.onSurfaceVariant,
+                    text = sortType.value.name,
                     fontWeight = FontWeight.Bold,
                 )
             }
 
             DropdownMenu(
-                expanded = state.isDropMenuVisible,
-                onDismissRequest = { onEvent(TaskEvent.HideDropMenu) }
+                expanded = isDropMenuVisible,
+                onDismissRequest = { viewModel.onEvent(MainScreenEvent.HideDropMenu) }
             ) {
                 SortType.entries.forEach { sortType ->
                     DropdownMenuItem(
@@ -199,8 +242,8 @@ private fun SortByRow(
                             Text(text = sortType.name)
                         },
                         onClick = {
-                            onEvent(TaskEvent.SortTasks(sortType))
-                            onEvent(TaskEvent.HideDropMenu)
+                            viewModel.onEvent(MainScreenEvent.OnSortTasksClick(sortType))
+                            viewModel.onEvent(MainScreenEvent.HideDropMenu)
                         }
                     )
                 }
@@ -217,7 +260,8 @@ private fun ToDoStats() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .height(125.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
     ) {
         Row(
             modifier = Modifier
@@ -233,8 +277,7 @@ private fun ToDoStats() {
                 if (index != StatsType.entries.size - 1) {
                     VerticalDivider(
                         modifier = Modifier
-                            .height(40.dp)
-                            .padding(horizontal = 8.dp),
+                            .height(60.dp),
                         color = colorScheme.onTertiaryContainer
                     )
                 }
