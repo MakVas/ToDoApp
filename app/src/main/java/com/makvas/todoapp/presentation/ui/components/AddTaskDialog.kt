@@ -94,7 +94,7 @@ fun AddTaskDialog(
                         )
 
                         CustomDatePicker(
-                            onValueChange = { onEvent(TaskEvent.SetDate(it)) }
+                            onDateSelected = { onEvent(TaskEvent.SetDate(it)) }
                         )
 
                         CustomTimePicker(
