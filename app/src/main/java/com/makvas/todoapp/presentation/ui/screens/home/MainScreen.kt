@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -47,10 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.makvas.todoapp.R
 import com.makvas.todoapp.data.Task
+import com.makvas.todoapp.presentation.ui.screens.add_task.components.StatusItem
 import com.makvas.todoapp.presentation.ui.screens.home.components.SwipeToDeleteContainer
 import com.makvas.todoapp.presentation.ui.screens.home.components.TaskItem
-import com.makvas.todoapp.presentation.util.SortType
+import com.makvas.todoapp.presentation.util.OrderType
 import com.makvas.todoapp.presentation.util.StatsType
+import com.makvas.todoapp.presentation.util.StatusType
 import com.makvas.todoapp.presentation.util.UiEvent
 
 @Composable
@@ -70,7 +73,8 @@ fun MainScreen(
                 is UiEvent.ShowSnackbar -> {
                     val result = snackBarHostState.showSnackbar(
                         message = event.message,
-                        actionLabel = event.actionText
+                        actionLabel = event.actionText,
+                        duration = SnackbarDuration.Short
                     )
 
                     if (result == SnackbarResult.ActionPerformed) {
@@ -167,12 +171,17 @@ private fun MainScreenBody(
         modifier = Modifier
             .fillMaxSize(),
     ) {
+
         item {
             ToDoStats()
         }
 
         item {
-            SortByRow(viewModel = viewModel)
+            SortByStatus(viewModel = viewModel)
+        }
+
+        item {
+            OrderByRow(viewModel = viewModel)
         }
 
         items(
@@ -183,13 +192,13 @@ private fun MainScreenBody(
                 SwipeToDeleteContainer(
                     item = task,
                     onDelete = { viewModel.onEvent(MainScreenEvent.OnDeleteClick(task)) },
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     TaskItem(
                         onEvent = viewModel::onEvent,
                         task = task,
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
                             .clip(MaterialTheme.shapes.large)
                             .clickable {
                                 viewModel.onEvent(MainScreenEvent.OnTaskClick(task))
@@ -202,10 +211,33 @@ private fun MainScreenBody(
 }
 
 @Composable
-private fun SortByRow(
+private fun SortByStatus(viewModel: MainScreenViewModel) {
+
+    val statusType = viewModel.statusType.collectAsState(initial = StatusType.All)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        StatusType.entries.forEach { status ->
+            StatusItem(
+                selected = status == statusType.value,
+                onClick = { viewModel.onEvent(MainScreenEvent.OnStatusClick(status)) },
+                text = status.name
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrderByRow(
     viewModel: MainScreenViewModel
 ) {
-    val sortType = viewModel.sortType.collectAsState(initial = SortType.TITLE)
+    val orderType = viewModel.orderType.collectAsState(initial = OrderType.TITLE)
     val isDropMenuVisible by viewModel.isDropMenuVisible.collectAsState(initial = false)
 
     Row(
@@ -217,7 +249,7 @@ private fun SortByRow(
     ) {
 
         Text(
-            text = "Sort by:"
+            text = "Order by:"
         )
 
         Column {
@@ -227,7 +259,7 @@ private fun SortByRow(
                 },
             ) {
                 Text(
-                    text = sortType.value.name,
+                    text = orderType.value.name,
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -236,13 +268,13 @@ private fun SortByRow(
                 expanded = isDropMenuVisible,
                 onDismissRequest = { viewModel.onEvent(MainScreenEvent.HideDropMenu) }
             ) {
-                SortType.entries.forEach { sortType ->
+                OrderType.entries.forEach { sortType ->
                     DropdownMenuItem(
                         text = {
                             Text(text = sortType.name)
                         },
                         onClick = {
-                            viewModel.onEvent(MainScreenEvent.OnSortTasksClick(sortType))
+                            viewModel.onEvent(MainScreenEvent.OnOrderByClick(sortType))
                             viewModel.onEvent(MainScreenEvent.HideDropMenu)
                         }
                     )
@@ -259,7 +291,7 @@ private fun ToDoStats() {
         contentColor = colorScheme.onTertiaryContainer,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp)
             .height(125.dp)
             .clip(MaterialTheme.shapes.extraLarge)
     ) {

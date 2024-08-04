@@ -3,9 +3,10 @@ package com.makvas.todoapp.presentation.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.makvas.todoapp.data.Task
-import com.makvas.todoapp.presentation.util.SortType
+import com.makvas.todoapp.presentation.util.OrderType
 import com.makvas.todoapp.data.TaskRepository
 import com.makvas.todoapp.presentation.util.Routes
+import com.makvas.todoapp.presentation.util.StatusType
 import com.makvas.todoapp.presentation.util.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,17 +24,18 @@ class MainScreenViewModel @Inject constructor(
     private val repository: TaskRepository
 ) : ViewModel() {
 
-    private val _sortType = MutableStateFlow(SortType.TITLE)
-    val sortType: StateFlow<SortType> = _sortType
+    private val _statusType = MutableStateFlow(StatusType.All)
+    val statusType: StateFlow<StatusType> = _statusType
 
-    private val _tasks = _sortType
+    private val _orderType = MutableStateFlow(OrderType.TITLE)
+    val orderType: StateFlow<OrderType> = _orderType
+
+    private val _tasks = _orderType
         .flatMapLatest { sortType ->
             when (sortType) {
-                SortType.TITLE -> repository.getTasksOrderedByTitle()
-                SortType.DATE -> repository.getTasksOrderedByDate()
-                SortType.IMPORTANCE -> repository.getImportantTasks()
-                SortType.COMPLETED -> repository.getCompletedTasks()
-                SortType.UNCOMPLETED -> repository.getUncompletedTasks()
+                OrderType.TITLE -> repository.getTasksOrderedByTitle()
+                OrderType.DATE -> repository.getTasksOrderedByDate()
+                OrderType.IMPORTANCE -> repository.getImportantTasks()
             }
         }
     val tasks = _tasks
@@ -55,8 +57,12 @@ class MainScreenViewModel @Inject constructor(
             is MainScreenEvent.HideDropMenu -> {
                 _isDropMenuVisible.value = false
             }
-            is MainScreenEvent.OnSortTasksClick -> {
-                _sortType.value = event.sortType
+            is MainScreenEvent.OnOrderByClick -> {
+                _orderType.value = event.orderType
+            }
+
+            is MainScreenEvent.OnStatusClick -> {
+                _statusType.value = event.statusType
             }
 
             is MainScreenEvent.OnDeleteClick -> {

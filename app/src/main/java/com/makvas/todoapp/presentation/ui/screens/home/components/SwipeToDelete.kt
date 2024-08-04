@@ -71,7 +71,7 @@ fun SwipeToDeleteContainer(
     ) {
         SwipeToDismissBox(
             modifier = modifier
-                .clip(MaterialTheme.shapes.medium),
+                .clip(MaterialTheme.shapes.large),
             state = state,
             backgroundContent = {
                 DeleteBackground(swipeDismissState = state)
