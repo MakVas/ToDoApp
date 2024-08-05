@@ -18,28 +18,19 @@ class TaskRepositoryImpl(
         return dao.getTaskById(id)
     }
 
-    override fun getTasksOrderedByTitle(): Flow<List<Task>> {
-        return dao.getTasksOrderedByTitle()
-    }
-
-    override fun getTasksOrderedByDate(): Flow<List<Task>> {
-        return dao.getTasksOrderedByDate()
-    }
-
-    override fun getImportantTasks(): Flow<List<Task>> {
-        return dao.getImportantTasks()
-    }
-
     override fun getCompletedTasks(): Flow<List<Task>> {
         return dao.getCompletedTasks()
     }
 
-    override fun getUncompletedTasks(): Flow<List<Task>> {
-        return dao.getUncompletedTasks()
+    override fun getCurrentTasks(currentTime: Long): Flow<List<Task>> {
+        return dao.getUncompletedTasks(currentTime)
+    }
+
+    override fun getOverdueTasks(currentTime: Long): Flow<List<Task>> {
+        return dao.getOverdueTasks(currentTime)
     }
 
     override fun getAllTasks(): Flow<List<Task>> {
         return dao.getAllTasks()
     }
-
 }

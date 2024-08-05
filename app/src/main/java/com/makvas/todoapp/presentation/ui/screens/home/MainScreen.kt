@@ -212,7 +212,6 @@ private fun MainScreenBody(
 
 @Composable
 private fun SortByStatus(viewModel: MainScreenViewModel) {
-
     val statusType = viewModel.statusType.collectAsState(initial = StatusType.All)
 
     Row(
@@ -220,7 +219,7 @@ private fun SortByStatus(viewModel: MainScreenViewModel) {
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
 
         StatusType.entries.forEach { status ->

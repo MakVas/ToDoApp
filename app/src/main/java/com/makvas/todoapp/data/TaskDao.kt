@@ -19,20 +19,14 @@ interface TaskDao {
     @Query("SELECT * FROM task WHERE id = :id")
     suspend fun getTaskById(id: Int): Task?
 
-    @Query("SELECT * FROM task ORDER BY title ASC")
-    fun getTasksOrderedByTitle(): Flow<List<Task>>
-
-    @Query("SELECT * FROM task ORDER BY date ASC")
-    fun getTasksOrderedByDate(): Flow<List<Task>>
-
-    @Query("SELECT * FROM task WHERE isImportant = 1")
-    fun getImportantTasks(): Flow<List<Task>>
-
     @Query("SELECT * FROM task WHERE isCompleted = 1")
     fun getCompletedTasks(): Flow<List<Task>>
 
-    @Query("SELECT * FROM task WHERE isCompleted = 0")
-    fun getUncompletedTasks(): Flow<List<Task>>
+    @Query("SELECT * FROM task WHERE isCompleted = 0 AND date >= :currentTime")
+    fun getUncompletedTasks(currentTime: Long): Flow<List<Task>>
+
+    @Query("SELECT * FROM task WHERE isCompleted = 0 AND date < :currentTime")
+    fun getOverdueTasks(currentTime: Long): Flow<List<Task>>
 
     @Query("SELECT * FROM task")
     fun getAllTasks(): Flow<List<Task>>

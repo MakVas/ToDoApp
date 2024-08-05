@@ -11,9 +11,11 @@ import com.makvas.todoapp.presentation.util.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,15 +32,30 @@ class MainScreenViewModel @Inject constructor(
     private val _orderType = MutableStateFlow(OrderType.TITLE)
     val orderType: StateFlow<OrderType> = _orderType
 
-    private val _tasks = _orderType
-        .flatMapLatest { sortType ->
-            when (sortType) {
-                OrderType.TITLE -> repository.getTasksOrderedByTitle()
-                OrderType.DATE -> repository.getTasksOrderedByDate()
-                OrderType.IMPORTANCE -> repository.getImportantTasks()
+    private val _tasks = _statusType.flatMapLatest { statusType ->
+        when (statusType) {
+            StatusType.All -> repository.getAllTasks()
+            StatusType.Current -> repository.getCurrentTasks(System.currentTimeMillis())
+            StatusType.Completed -> repository.getCompletedTasks()
+            StatusType.Overdue -> repository.getOverdueTasks(System.currentTimeMillis())
+        }
+    }
+
+    private val _orderedTasks = _orderType.flatMapLatest { orderType ->
+        getTasksWithOrder(_tasks, orderType)
+    }
+
+    val tasks: Flow<List<Task>> = _orderedTasks
+
+    private fun getTasksWithOrder(tasksFlow: Flow<List<Task>>, orderType: OrderType): Flow<List<Task>> {
+        return tasksFlow.map { tasks ->
+            when (orderType) {
+                OrderType.DATE -> tasks.sortedBy { it.date }
+                OrderType.TITLE -> tasks.sortedBy { it.title }
+                OrderType.IMPORTANCE -> tasks.sortedBy { it.isImportant.not() }
             }
         }
-    val tasks = _tasks
+    }
 
     private val _isDropMenuVisible = MutableStateFlow(false)
     val isDropMenuVisible: StateFlow<Boolean> = _isDropMenuVisible
@@ -54,9 +71,11 @@ class MainScreenViewModel @Inject constructor(
             is MainScreenEvent.ShowDropMenu -> {
                 _isDropMenuVisible.value = true
             }
+
             is MainScreenEvent.HideDropMenu -> {
                 _isDropMenuVisible.value = false
             }
+
             is MainScreenEvent.OnOrderByClick -> {
                 _orderType.value = event.orderType
             }

@@ -6,10 +6,8 @@ interface TaskRepository {
     suspend fun insertTask(task: Task)
     suspend fun deleteTask(task: Task)
     suspend fun getTaskById(id: Int): Task?
-    fun getTasksOrderedByTitle(): Flow<List<Task>>
-    fun getTasksOrderedByDate(): Flow<List<Task>>
-    fun getImportantTasks(): Flow<List<Task>>
     fun getCompletedTasks(): Flow<List<Task>>
-    fun getUncompletedTasks(): Flow<List<Task>>
+    fun getCurrentTasks(currentTime: Long): Flow<List<Task>>
+    fun getOverdueTasks(currentTime: Long): Flow<List<Task>>
     fun getAllTasks(): Flow<List<Task>>
 }
