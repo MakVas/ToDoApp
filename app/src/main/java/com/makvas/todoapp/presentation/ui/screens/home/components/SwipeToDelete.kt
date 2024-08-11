@@ -50,8 +50,10 @@ fun SwipeToDeleteContainer(
             if (value == SwipeToDismissBoxValue.EndToStart) {
                 isRemoved = true
                 true
-            } else false
-
+            } else {
+                isRemoved = false
+                false
+            }
         }
     )
 

@@ -11,6 +11,5 @@ data class Task(
     val isCompleted: Boolean,
     val isImportant: Boolean,
     val description: String?,
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey val id: Int? = null,
 )

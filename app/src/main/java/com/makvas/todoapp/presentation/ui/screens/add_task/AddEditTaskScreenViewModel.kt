@@ -85,7 +85,8 @@ class AddEditTaskScreenViewModel @Inject constructor(
                                 time = time,
                                 description = description,
                                 isImportant = isImportant,
-                                isCompleted = task?.isCompleted ?: false
+                                isCompleted = task?.isCompleted ?: false,
+                                id = task?.id
                             )
                         )
                         sendUiEvent(UiEvent.PopBackStack)

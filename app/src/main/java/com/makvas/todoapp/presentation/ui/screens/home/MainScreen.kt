@@ -186,7 +186,7 @@ private fun MainScreenBody(
 
         items(
             items = tasks,
-            key = { task -> task.id }
+            key = { task -> task.id!! }
         ) { task ->
             Box {
                 SwipeToDeleteContainer(
